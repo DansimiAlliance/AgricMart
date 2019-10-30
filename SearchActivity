@@ -1,0 +1,138 @@
+package com.example.fatoubane.agricmartngapp;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SearchActivity extends AppCompatActivity {
+    String URL = "http://dansimitech.hostei.com/getSearchData.php";
+    Spinner spinner_category, spinner_location;
+    Spinner city, category;
+    EditText product;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search);
+
+        spinner_category = (Spinner) findViewById(R.id.spinner_category);
+        spinner_location = (Spinner) findViewById(R.id.spinner_location);
+        ArrayAdapter adapter_category, adapter_location;
+        adapter_category = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_spinner_item);
+        adapter_location = ArrayAdapter.createFromResource(this, R.array.location_array, android.R.layout.simple_spinner_item);
+        spinner_category.setAdapter(adapter_category);
+        spinner_location.setAdapter(adapter_location);
+
+    }
+
+    public void openList(View view){
+        setupVariable();
+        getData();
+    }
+
+    public void backHome(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+    }
+    private void showJSON(String response){
+        //Create an array of adverts
+
+        ArrayList<Advert> adverts = new ArrayList<Advert>();
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray result = jsonObject.getJSONArray("result");
+            for(int i = 0; i<result.length(); i++){
+                JSONObject collectData = result.getJSONObject(i);
+
+                String imageUrl = collectData.getString("image");
+                adverts.add(new Advert(
+                        imageUrl,
+                        "Product: " + collectData.getString("product").toUpperCase(),
+                        "Category: " + collectData.getString("category").toUpperCase(),
+                        "Location: " + collectData.getString("city").toUpperCase(),
+                        "Price: N" + collectData.getString("price"),
+                        "Contact: " + collectData.getString("phonenumber"),
+                        "Description: " + collectData.getString("description").toUpperCase(),
+                        collectData.getString("negotiable").toUpperCase() ));
+            }
+
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        AdvertAdapter itemsAdapter = new AdvertAdapter(SearchActivity.this, adverts);
+        ListView searchlistView = (ListView) findViewById(R.id.search_list);
+        searchlistView.setAdapter(itemsAdapter);
+
+    }
+    private void getData(){
+
+
+        final String vproduct = product.getText().toString().toLowerCase().trim();
+        final String vcity = city.getSelectedItem().toString().toLowerCase().trim();
+        final String vcategory = category.getSelectedItem().toString().toLowerCase().trim();
+
+        final ProgressDialog loading = ProgressDialog.show(this,"Viewing Adverts...","Please wait...",false,false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response){
+                loading.dismiss();
+                showJSON(response);
+
+            }
+        },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        String no_internet = "No Adverts! or Check your Internet Connection";
+                        Toast.makeText(SearchActivity.this, no_internet, Toast.LENGTH_LONG).show();
+                        loading.dismiss();
+                    }
+                })
+        {
+            //Adding Parameters
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("product", vproduct);
+                map.put("city", vcity);
+                map.put("category", vcategory);
+
+                return map;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+    public void setupVariable (){
+        product = (EditText) findViewById(R.id.search_product);
+        city = (Spinner) findViewById(R.id.spinner_location);
+        category = (Spinner) findViewById(R.id.spinner_category);
+
+    }
+}
