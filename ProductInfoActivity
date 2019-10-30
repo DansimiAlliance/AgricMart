@@ -1,0 +1,202 @@
+package com.example.fatoubane.agricmartngapp;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ProductInfo extends AppCompatActivity {
+    TextView phoneNumber;
+    String URL = "http://dansimitech.hostei.com/getUserList.php";
+    String deleteURL = "http://dansimitech.hostei.com/deleteUser.php";
+
+    String duser;
+    EditText productId;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_product_info);
+        phoneNumber = (TextView) findViewById(R.id.phone_number);
+        duser = getIntent().getStringExtra("user");
+        productId = (EditText) findViewById(R.id.product_id);
+        phoneNumber.setText(duser);
+        getData(duser);
+
+        final ListView searchlistView = (ListView) findViewById(R.id.user_list);
+        searchlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                String selected =((TextView)view.findViewById(R.id.item_product)).getText().toString();
+                String deleteString = selected.substring(8).trim();
+                Toast.makeText(ProductInfo.this, selected, Toast.LENGTH_LONG).show();
+                productId.setText(deleteString);
+
+            }
+        });
+    }
+
+    private void showJSON(String response){
+        //Create an array of adverts
+
+        ArrayList<Advert> adverts = new ArrayList<Advert>();
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray result = jsonObject.getJSONArray("result");
+            for(int i = 0; i<result.length(); i++){
+                JSONObject collectData = result.getJSONObject(i);
+
+                String imageUrl = collectData.getString("image");
+                adverts.add(new Advert(
+                        imageUrl,
+                        "Product: " + collectData.getString("product").toUpperCase(),
+                        "Category: " + collectData.getString("category").toUpperCase(),
+                        "Location: " + collectData.getString("city").toUpperCase(),
+                        "Price: N" + collectData.getString("price"),
+                        "Contact: " + collectData.getString("phonenumber"),
+                        "More Details: " + collectData.getString("description").toUpperCase(),
+                        collectData.getString("negotiable").toUpperCase() ));
+
+            }
+
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        AdvertAdapterUser itemsAdapter = new AdvertAdapterUser(ProductInfo.this, adverts);
+        ListView searchlistView = (ListView) findViewById(R.id.user_list);
+        searchlistView.setAdapter(itemsAdapter);
+
+    }
+    private void getData(String user){
+        final String vphoneNumber = user;
+
+        final ProgressDialog loading = ProgressDialog.show(this,"Viewing Adverts...","Please wait...",false,false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response){
+                loading.dismiss();
+                showJSON(response);
+
+            }
+        },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        String no_internet = "No Adverts! or Check your Internet Connection";
+                        Toast.makeText(ProductInfo.this, no_internet, Toast.LENGTH_LONG).show();
+                        loading.dismiss();
+                    }
+                })
+        {
+            //Adding Parameters
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("phonenumber", vphoneNumber);
+
+                return map;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    public void backHome(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+    }
+
+    public void deleteAdvert(View view){
+
+        phoneNumber = (TextView) findViewById(R.id.phone_number);
+        duser = getIntent().getStringExtra("user");
+        productId = (EditText) findViewById(R.id.product_id);
+        String dproduct = productId.getText().toString().trim();
+        phoneNumber.setText(duser);
+
+        if(dproduct.isEmpty() || dproduct.equalsIgnoreCase("")){
+            Toast.makeText(ProductInfo.this, "Please select an item to be deleted", Toast.LENGTH_LONG).show();
+        }
+        else {
+            deleteData(duser, dproduct);
+        }
+
+
+    }
+
+    private void deleteData(String user, String product){
+        final String vphoneNumber = user;
+        final String vproduct = product;
+
+        final ProgressDialog loading = ProgressDialog.show(this,"Viewing Adverts...","Please wait...",false,false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, deleteURL, new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response){
+                if(response.equalsIgnoreCase("success")) {
+                    Toast.makeText(ProductInfo.this, "Advert Deleted Successfully!", Toast.LENGTH_LONG).show();
+                    loading.dismiss();
+                    reloadView(vphoneNumber);
+                }
+                else {
+                    Toast.makeText(ProductInfo.this, "Server Problem", Toast.LENGTH_LONG).show();
+                    loading.dismiss();
+                }
+            }
+        },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        String no_internet = "No Adverts! or Check your Internet Connection";
+                        Toast.makeText(ProductInfo.this, no_internet, Toast.LENGTH_LONG).show();
+                        loading.dismiss();
+                    }
+                })
+        {
+            //Adding Parameters
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("phonenumber", vphoneNumber);
+                map.put("product", vproduct);
+
+                return map;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    public void reloadView(String user){
+        final String vphonenumber = user;
+        Intent intent = new Intent(ProductInfo.this, ProductInfo.class);
+        intent.putExtra("user", vphonenumber);
+        startActivity(intent);
+    }
+}
