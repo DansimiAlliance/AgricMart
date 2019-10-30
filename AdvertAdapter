@@ -1,0 +1,69 @@
+package com.example.fatoubane.agricmartngapp;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+/**
+ * Created by FATOU BANE on 16/07/2017.
+ */
+public class AdvertAdapter extends ArrayAdapter<Advert> {
+    Context context;
+    public AdvertAdapter(Activity context, ArrayList<Advert> adverts) {
+
+        super(context, 0, adverts);
+        this.context = context;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View listItemView = convertView;
+        if (listItemView == null) {
+            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_layout, parent, false);
+        }
+
+        Advert currentAd = getItem(position);
+
+        TextView productView = (TextView) listItemView.findViewById(R.id.item_product);
+        productView.setText(currentAd.getItemProduct());
+
+        TextView categoryView = (TextView) listItemView.findViewById(R.id.item_category);
+        categoryView.setText(currentAd.getItemCategory());
+
+        TextView cityView = (TextView) listItemView.findViewById(R.id.item_city);
+        cityView.setText(currentAd.getItemCity());
+
+        TextView priceView = (TextView) listItemView.findViewById(R.id.item_price);
+        priceView.setText(currentAd.getItemPrice());
+
+        TextView descriptionView = (TextView) listItemView.findViewById(R.id.item_description);
+        descriptionView.setText(currentAd.getItemDescription());
+
+        TextView negotiableView = (TextView) listItemView.findViewById(R.id.item_negotiable);
+        negotiableView.setText(currentAd.getItemNegotiable());
+
+        TextView contactView = (TextView) listItemView.findViewById(R.id.item_contact);
+        contactView.setText(currentAd.getItemContact());
+
+
+        ImageView imageView = (ImageView) listItemView.findViewById(R.id.item_image);
+        Picasso.with(context).load(currentAd.getEncoded_image()).into(imageView);
+
+        return listItemView;
+
+    }
+
+}
