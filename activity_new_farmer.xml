@@ -1,0 +1,98 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.fatoubane.agricmartngapp.MainActivity">
+
+     <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+         android:weightSum="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/martLogo"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/martlogo"
+                android:layout_marginTop="20dp"
+                android:background="#fefcfc"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "Personal Information"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:textSize= "26sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:background="#fefcfc">
+
+                <EditText
+                    android:id="@+id/farmer_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint = "Name"
+                    android:layout_marginTop="10dp"
+                    android:textSize= "20sp"
+                    android:inputType="text"/>
+
+                <EditText
+                    android:id="@+id/farmer_phone_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint = "Phone Number"
+                    android:layout_marginTop="10dp"
+                    android:textSize= "20sp"
+                    android:inputType="phone"/>
+
+                <EditText
+                    android:id="@+id/farmer_email_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint = "Email Address"
+                    android:layout_marginTop="10dp"
+                    android:textSize= "20sp"
+                    android:inputType="text"/>
+
+                <EditText
+                    android:id="@+id/farmer_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint = "Password"
+                    android:layout_marginTop="10dp"
+                    android:textSize= "20sp"
+                    android:inputType="numberPassword"/>
+
+                <EditText
+                    android:id="@+id/farmer_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint = "Confirm Password"
+                    android:layout_marginTop="10dp"
+                    android:textSize= "20sp"
+                    android:inputType="numberPassword"/>
+
+            </LinearLayout>
+    
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Submit"
+                android:layout_marginTop="15dp"
+                android:textSize= "20dp"
+                android:layout_weight="0.14"
+                android:onClick="submitFarmer"/>
+
+    </LinearLayout>
+</ScrollView>

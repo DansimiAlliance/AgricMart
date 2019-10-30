@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.fatoubane.agricmartngapp.About">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/martLogo"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/martlogo"
+        android:layout_marginTop="20dp"
+        android:background="#fefcfc"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "About Agric Mart"
+        android:layout_marginTop="14dp"
+        android:padding="10dp"
+        android:textSize= "30sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Agricmart is an application that allows you advertise your produce and get buyers.  "
+        android:id="@+id/textView"
+        android:padding="14dp"
+        android:textSize= "25sp"/>
+</LinearLayout>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.fatoubane.agricmartngapp.LoginActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/martLogo"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/martlogo"
+        android:layout_marginTop="20dp"
+        android:background="#fefcfc"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "Login"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:textSize= "30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="#fefcfc">
+
+        <EditText
+            android:id="@+id/farmer_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint = "Phone Number"
+            android:layout_marginTop="10dp"
+            android:textSize= "20sp"
+            android:inputType="phone"/>
+
+        <EditText
+            android:id="@+id/farmer_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint = "Password"
+            android:layout_marginTop="10dp"
+            android:textSize= "20sp"
+            android:inputType="numberPassword"/>
+
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Login"
+            android:textSize= "20sp"
+            android:onClick = "authenticationLogin"/>
+    </LinearLayout>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Register"
+        android:layout_marginTop="50dp"
+        android:padding="16dp"
+        android:textSize= "20sp"
+        android:onClick = "openRegister"/>
+
+</LinearLayout>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context="com.example.fatoubane.agricmartngapp.SearchActivity">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="HOME"
+        android:textSize= "20sp"
+        android:onClick = "backHome"
+        android:layout_marginTop="15dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "Search"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="2dp"
+        android:textSize= "30sp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint = "Product"
+        android:id="@+id/search_product"
+        android:layout_marginTop="15dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="#fefcfc"
+        android:layout_gravity="center_horizontal"
+        android:weightSum="1">
+
+        <Spinner
+            android:layout_width="143dp"
+            android:layout_height="wrap_content"
+            android:id = "@+id/spinner_category"
+            android:prompt="@string/city_prompt"
+            android:spinnerMode="dropdown"
+            android:paddingRight="5dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_weight="0.5">
+
+        </Spinner>
+
+        <Spinner
+            android:layout_width="143dp"
+            android:layout_height="wrap_content"
+            android:id = "@+id/spinner_location"
+            android:entries = "@array/location_array"
+            android:prompt="@string/location_prompt"
+            android:spinnerMode="dropdown"
+            android:paddingRight="5dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_weight="0.5">
+
+        </Spinner>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="SEARCH"
+        android:textSize= "20sp"
+        android:onClick = "openList"
+        android:layout_marginTop="15dp"/>
+
+
+
+
+
+    <ListView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="#fefcfc">
+
+    </ListView>
+</LinearLayout>
