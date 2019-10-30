@@ -1,0 +1,199 @@
+package com.example.fatoubane.agricmartngapp;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Base64;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
+import java.lang.ref.ReferenceQueue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SellProduct extends AppCompatActivity implements View.OnClickListener{
+    private static final int RESULT_LOAD_IMAGE = 1;
+    ImageView imagetoupload;
+    Button uploadbutton, postbutton;
+    Spinner spinner_category, spinner_location;
+    String URL = "http://dansimitech.hostei.com/SavePicture.php";
+    EditText product,  description, price;
+    Spinner city, category;
+    RadioButton negotiable;
+    TextView user_phonenumber;
+    String duser;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sell_product);
+
+
+        imagetoupload = (ImageView) findViewById(R.id.item_image);
+        uploadbutton = (Button) findViewById(R.id.upload_image);
+        postbutton = (Button) findViewById(R.id.post_advert);
+
+        user_phonenumber = (TextView) findViewById(R.id.phone_number);
+        duser = getIntent().getStringExtra("user");
+
+        user_phonenumber.setText(duser);
+
+        imagetoupload.setOnClickListener(this);
+        uploadbutton.setOnClickListener(this);
+        postbutton.setOnClickListener(this);
+
+
+        spinner_category = (Spinner) findViewById(R.id.spinner_category);
+        spinner_location = (Spinner) findViewById(R.id.spinner_location);
+        ArrayAdapter adapter_category, adapter_location;
+        adapter_category = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_spinner_item);
+        adapter_location = ArrayAdapter.createFromResource(this, R.array.location_array, android.R.layout.simple_spinner_item);
+        spinner_category.setAdapter(adapter_category);
+        spinner_location.setAdapter(adapter_location);
+
+    }
+
+    @Override
+    public void onClick(View view){
+        switch (view.getId()){
+            case R.id.item_image:
+                Intent gallaryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(gallaryIntent, RESULT_LOAD_IMAGE);
+                break;
+            case R.id.post_advert:
+                Bitmap image = ((BitmapDrawable) imagetoupload.getDrawable()).getBitmap();
+                setupVariable();
+
+                final String vphonenumber = user_phonenumber.getText().toString().toLowerCase().trim();
+                final String vproduct = product.getText().toString().toLowerCase().trim();
+                final String vcity = city.getSelectedItem().toString().toLowerCase().trim();
+                final String vcategory = category.getSelectedItem().toString().toLowerCase().trim();
+                final String vdescription = description.getText().toString().toLowerCase().trim();
+                final String vprice = price.getText().toString().toLowerCase().trim();
+
+                String nego = "not-negotiable";
+                if(negotiable.isChecked()){
+                    nego = "negotiable";
+                }
+                final String vnegotiable = nego;
+
+                //Converting image to base64 string
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                final String  encoded_string = Base64.encodeToString(byteArrayOutputStream.toByteArray(), 0);
+
+                //sending image to server
+                final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
+                StringRequest request = new StringRequest(Request.Method.POST, URL,new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.equalsIgnoreCase("success")){
+                            loading.dismiss();
+                            Toast.makeText(SellProduct.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(SellProduct.this, ProductInfo.class);
+                            intent.putExtra("user", vphonenumber);
+                            startActivity(intent);
+                        }else
+                        {
+                            Toast.makeText(SellProduct.this, "Some error occurred", Toast.LENGTH_LONG).show();
+                            loading.dismiss();
+                        }
+                    }
+                },new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(SellProduct.this, "Some error occurred ->" + error, Toast.LENGTH_LONG).show();
+                        loading.dismiss();
+                    }
+                }){
+                    //Adding Parameters
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError{
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("encoded_string", encoded_string);
+                        map.put("product", vproduct);
+                        map.put("city", vcity);
+                        map.put("category", vcategory);
+                        map.put("description", vdescription);
+                        map.put("negotiable", vnegotiable);
+                        map.put("phonenumber", vphonenumber);
+                        map.put("price", vprice);
+
+                        return map;
+                    }
+                    };
+                    RequestQueue requestQueue = Volley.newRequestQueue(SellProduct.this);
+                    requestQueue.add(request);
+
+
+                break;
+            case R.id.upload_image:
+                Intent gallaryIntent2 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(gallaryIntent2, RESULT_LOAD_IMAGE);
+                break;
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
+            Uri selectedImage = data.getData();
+            imagetoupload.setImageURI(selectedImage);
+        }
+    }
+    public void setupVariable (){
+        product = (EditText) findViewById(R.id.product_name);
+        city = (Spinner) findViewById(R.id.spinner_location);
+        category = (Spinner) findViewById(R.id.spinner_category);
+        description = (EditText) findViewById(R.id.product_description);
+        price = (EditText) findViewById(R.id.product_price);
+        negotiable = (RadioButton) findViewById(R.id.radioButton);
+
+    }
+
+    public void viewList(View view){
+        final String vphonenumber = user_phonenumber.getText().toString().toLowerCase().trim();
+        Intent intent = new Intent(SellProduct.this, ProductInfo.class);
+        intent.putExtra("user", vphonenumber);
+        startActivity(intent);
+
+    }
+}
